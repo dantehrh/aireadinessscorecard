@@ -875,8 +875,7 @@ function generatePDF(){
     t('SECTION 2 — INTERPRETATION & PRIORITY GAPS',M,y+1,{style:'bold',size:8,color:[245,240,232]});
     y+=10;
 
-    const interpClean=getInterpFull(level).replace(/<br>/g,'
-').replace(/<[^>]+>/g,'');
+    const interpClean=getInterpFull(level).replace(/<br>/g,' ').replace(/<[^>]+>/g,'');
     fill(M,y,4,4,...lc);
     y+=6;
     t('What '+getLvlLabel(level)+' means for '+co,M,y,{style:'bold',size:9});
