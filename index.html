@@ -217,10 +217,10 @@
 
   /* ── PROGRESS ── */
   .progress-wrap {
-    background: var(--white);
-    border: 0.5px solid var(--stone-light);
+    background: var(--ink);
+    border: none;
     border-radius: 2px;
-    padding: 1.5rem 2rem;
+    padding: 1rem 1.5rem;
     margin-bottom: 2rem;
     display: flex;
     align-items: center;
@@ -228,8 +228,8 @@
   }
   .progress-bar-track {
     flex: 1;
-    height: 3px;
-    background: var(--cream);
+    height: 5px;
+    background: #2a2a2a;
     border-radius: 2px;
     overflow: hidden;
   }
@@ -241,7 +241,7 @@
   }
   .progress-label {
     font-size: 0.75rem;
-    color: var(--stone);
+    color: #ffffff;
     white-space: nowrap;
     font-weight: 500;
   }
@@ -251,7 +251,8 @@
     font-size: 0.65rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--gold);
+    color: var(--ink);
+    font-weight: 700;
     margin-bottom: 0.4rem;
   }
   .section-title {
@@ -1113,6 +1114,34 @@ function getPriorityGaps() {
     .map(q => ({ qid: q.id, score: answers[q.id], ...GAPS[q.id] }));
 }
 
+function getDimNarrative(dimId, score, max) {
+  const pct = Math.round((score/max)*100);
+  const narratives = {
+    volume: {
+      high: `Your historical data depth is a genuine asset. You have sufficient volume and consistency to support AI model training with meaningful confidence.`,
+      moderate: `Your data history is workable but limited. Plan for a 3–6 month data collection and validation phase before committing to your most complex AI initiative.`,
+      low: `Insufficient data history is your most immediate constraint. Focus on structured data collection now. AI initiatives are viable — but only after a data foundation has been established.`
+    },
+    access: {
+      high: `Your data is accessible and well-structured. This significantly reduces the engineering overhead of any AI project and shortens your path to first deployment.`,
+      moderate: `Some data accessibility barriers exist. Budget for data engineering work as part of any AI project scope — typically 20–30% of total project cost at this readiness level.`,
+      low: `Data accessibility is a critical blocker. Address system integration and export capability before commissioning any AI build. Without this, every AI project will cost more and take longer than projected.`
+    },
+    quality: {
+      high: `Your data quality and governance are strong. This is the dimension most organisations underestimate — and one of your clear advantages in pursuing AI with confidence.`,
+      moderate: `Data quality gaps will create friction in AI projects. A targeted data quality audit before any build engagement is a high-return investment.`,
+      low: `Data quality is your most significant risk factor. AI systems trained on low-quality data produce confident wrong answers. A data quality remediation programme is the most important investment you can make before any AI conversation with a vendor.`
+    },
+    org: {
+      high: `Your organisation has the internal capability and adoption track record to own AI systems effectively. This is a rare and valuable advantage.`,
+      moderate: `Some organisational capability gaps exist. Identifying and developing your internal AI initiative owner before project start is the single highest-return action available to you.`,
+      low: `Organisational readiness requires investment. Begin building internal capability now — through training, hiring, or structured knowledge transfer from external partners — before committing to AI build projects.`
+    }
+  };
+  const lvl = pct >= 70 ? 'high' : pct >= 40 ? 'moderate' : 'low';
+  return narratives[dimId]?.[lvl] || '';
+}
+
 function getSummaryText(level, name) {
   const first = name || 'Your organisation';
   if (level === 'high') return `${first} is well-positioned to begin AI initiatives with confidence. Your data foundation is strong and your organisation has the capability to move from planning to action. The priority now is selecting the right first initiative — one that is high-value, well-scoped, and builds internal confidence through a visible early win.`;
@@ -1120,10 +1149,39 @@ function getSummaryText(level, name) {
   return `${first} is at an early stage of AI readiness. This is not a barrier to AI adoption — it is a clear signal about where to invest first. The organisations that build the strongest AI foundations in the next two years will be the ones that take data readiness seriously before they spend on AI systems. That preparation starts now.`;
 }
 
+function getBenchmark(level, score, max) {
+  const pct = Math.round((score/max)*100);
+  if (level === 'high') return `Organisations scoring above 70% are typically ready to begin AI project scoping within 30 days. Your score of ${pct}% places you in the top readiness tier — meaning your first AI initiative, if well-scoped, can realistically reach deployment within 4–6 months.`;
+  if (level === 'moderate') return `Organisations scoring between 40–70% typically need 2–4 months of targeted preparation before a first AI project succeeds. Your score of ${pct}% suggests focused work on your priority gaps will move you to high readiness within one quarter.`;
+  return `Organisations scoring below 40% are at an early preparation stage. With focused effort on data and organisational foundations, most organisations at this stage reach moderate readiness within 6 months. Your score of ${pct}% gives you a clear starting point.`;
+}
+
 function getInterpText(level) {
   if (level === 'high') return `<strong>What this means:</strong> Your organisation can begin AI project scoping immediately. Your data foundation is strong enough to support at least one meaningful AI initiative. Focus your energy on problem selection — identifying the highest-value workflow to address first — and vendor evaluation rather than data preparation. The window to gain competitive advantage is open. Move within the next quarter.<br><br><strong>Your next step:</strong> Commission an AI Opportunity Scan to identify your highest-value AI initiative and build the business case for it.`;
   if (level === 'moderate') return `<strong>What this means:</strong> You have the foundation to pursue AI but specific gaps — identified in the Priority Gaps section below — will create friction and cost if not addressed first. A typical moderate-readiness organisation needs two to four months of focused data and capability work before beginning an AI build. That investment will more than pay back in reduced project risk and higher delivery quality.<br><br><strong>Your next step:</strong> Address your two highest-priority gaps. Then commission an AI Opportunity Scan to validate which initiative to pursue first.`;
   return `<strong>What this means:</strong> Building AI systems on your current foundation carries significant risk of failure — not because AI cannot work for your business, but because the conditions for it to work are not yet in place. The good news: every organisation at this stage that invests six to twelve months in data and capability foundations emerges dramatically better positioned. Your competitors who jump to AI without this preparation will waste significant resources. You will not.<br><br><strong>Your next step:</strong> Begin with a Data Readiness Assessment to understand precisely what needs to be addressed and in what order. This is the most valuable investment you can make before any AI conversation with a vendor.`;
+}
+
+
+function getRoadmap(level) {
+  const roadmaps = {
+    high: [
+      { phase: 'Days 1–30', title: 'Identify your highest-value AI opportunity', actions: 'Map your top three operational pain points against the AI opportunity framework. Score each on business value, data readiness, and implementation complexity. Select one initiative to pursue first — the highest combined score, not the most exciting.' },
+      { phase: 'Days 31–60', title: 'Build the internal business case', actions: 'Quantify the cost of the problem you are solving. Define what success looks like in measurable business terms — not technology terms. Identify and brief your internal project owner. Begin vendor conversations using a structured evaluation framework.' },
+      { phase: 'Days 61–90', title: 'Commission a structured AI assessment', actions: 'Engage a trusted AI advisory firm to validate your opportunity selection, assess technical feasibility, and produce a scoped business case. This investment typically prevents 5–10× its cost in misdirected project spend.' }
+    ],
+    moderate: [
+      { phase: 'Days 1–30', title: 'Address your two most critical data gaps', actions: 'From the Priority Gaps section above, select the two lowest-scoring dimensions and assign an internal owner to each. Begin the data governance and accessibility work that will unlock your AI potential. Do not commission any AI build until this work is underway.' },
+      { phase: 'Days 31–60', title: 'Appoint your internal AI initiative owner', actions: 'Name a specific person who will own AI initiatives from strategy through to live operation. Brief them on this report. Give them the mandate and the time to build the capability this role requires.' },
+      { phase: 'Days 61–90', title: 'Commission an AI readiness assessment', actions: 'With your critical gaps being addressed, engage an AI advisory firm to validate your readiness trajectory, identify your best first initiative, and produce a prioritised AI roadmap for the next 12 months.' }
+    ],
+    low: [
+      { phase: 'Days 1–30', title: 'Establish data ownership and governance', actions: 'Appoint named owners for your most critical datasets. Document how data is currently collected and where the gaps are. This costs nothing but changes everything about your ability to pursue AI in the future.' },
+      { phase: 'Days 31–60', title: 'Begin a structured data quality programme', actions: 'Run a data quality audit on the dataset most relevant to your priority AI opportunity. Identify the most significant quality issues and build a remediation plan. Set a data quality target — 80%+ accuracy and completeness — as a prerequisite for any AI project.' },
+      { phase: 'Days 61–90', title: 'Commission a data and AI readiness assessment', actions: 'Engage an AI advisory firm to assess your current state, define the specific steps to AI readiness, and build a realistic 12-month preparation roadmap. The investment at this stage is in foundations — not in AI systems.' }
+    ]
+  };
+  return roadmaps[level] || roadmaps.moderate;
 }
 
 function showResults() {
@@ -1134,14 +1192,17 @@ function showResults() {
   const { total, max, sectionScores } = getScores();
   const level = getLevel(total, max);
   const gaps = getPriorityGaps();
-  const name = userData.firstName || 'Your organisation';
+  const name = userData.company || userData.firstName || 'Your Organisation';
+  const personName = userData.firstName ? (userData.firstName + (userData.lastName ? ' ' + userData.lastName : '')) : '';
 
   let dimHTML = '';
-  Object.values(sectionScores).forEach(s => {
+  const dimIds = Object.keys(sectionScores);
+  Object.entries(sectionScores).forEach(([dimId, s], idx) => {
     const pct = Math.round((s.score / s.max) * 100);
     const col = getDimColor(s.score, s.max);
+    const narrative = getDimNarrative(dimId, s.score, s.max);
     dimHTML += `
-      <div class="dimension-card">
+      <div class="dimension-card" style="grid-column: span 1;">
         <div class="dim-label">Dimension score</div>
         <div class="dim-name">${s.title}</div>
         <div class="dim-bar-track">
@@ -1151,6 +1212,7 @@ function showResults() {
           <span>${pct}%</span>
           <span class="dim-score-val">${s.score} / ${s.max}</span>
         </div>
+        ${narrative ? `<div style="font-size:0.78rem;color:#666;line-height:1.5;margin-top:0.65rem;padding-top:0.65rem;border-top:0.5px solid #EDE9E0;">${narrative}</div>` : ''}
       </div>
     `;
   });
@@ -1169,8 +1231,9 @@ function showResults() {
 
   document.getElementById('resultsContent').innerHTML = `
     <div class="result-hero">
-      <span class="result-eyebrow">Your AI Readiness Report · ${userData.company || 'Your Organisation'}</span>
-      <div class="result-name">Hello, ${name}.</div>
+      <span class="result-eyebrow">AI Readiness Report · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</span>
+      <div class="result-name">${name}</div>
+      ${personName ? `<div style="font-size:0.85rem;color:#888;margin-top:0.25rem;margin-bottom:-0.5rem;">Prepared for ${personName}${userData.role ? ', ' + userData.role : ''}</div>` : ''}
       <div class="result-score-wrap">
         <div class="result-score-num">${total}</div>
         <div class="result-score-denom"> / ${max}</div>
@@ -1182,13 +1245,27 @@ function showResults() {
     <div class="dimensions-grid">${dimHTML}</div>
 
     <div class="interpretation-box ${level}">
-      <div class="interp-title">${getLevelLabel(level)} — What this means for ${userData.company || 'your organisation'}</div>
+      <div class="interp-title">${getLevelLabel(level)} — What this means for ${name}</div>
       <div class="interp-text">${getInterpText(level)}</div>
+      <div style="margin-top:1rem;padding-top:1rem;border-top:0.5px solid rgba(0,0,0,0.08);font-size:0.8rem;line-height:1.6;opacity:0.85;">${getBenchmark(level, total, max)}</div>
     </div>
 
     <div class="gaps-section">
       <div class="gaps-title">Priority gaps to address</div>
       ${gapsHTML}
+    </div>
+
+    <div style="background:var(--white);border:0.5px solid var(--stone-light);border-radius:2px;padding:1.75rem 2rem;margin-bottom:2rem;">
+      <div style="font-size:0.65rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink);font-weight:700;margin-bottom:1rem;">Your 90-Day Action Roadmap</div>
+      ${getRoadmap(level).map((step,i) => `
+        <div style="display:grid;grid-template-columns:90px 1fr;gap:1rem;align-items:start;margin-bottom:${i<2?'1rem':'0'};">
+          <div style="background:var(--ink);color:#CBFF00;border-radius:2px;padding:0.5rem 0.6rem;font-size:0.7rem;font-weight:700;letter-spacing:0.06em;text-align:center;line-height:1.3;">${step.phase}</div>
+          <div style="background:var(--paper);border-radius:2px;padding:0.75rem 1rem;">
+            <div style="font-size:0.875rem;font-weight:600;margin-bottom:0.3rem;">${step.title}</div>
+            <div style="font-size:0.8rem;color:#666;line-height:1.55;">${step.actions}</div>
+          </div>
+        </div>
+      `).join('')}
     </div>
 
     <div class="cta-box">
@@ -1197,7 +1274,7 @@ function showResults() {
       <p class="cta-text">United I/O helps African enterprises close their AI readiness gaps and build the systems that produce real commercial outcomes. No vendor pitch. No global framework applied without context. A direct conversation about your specific situation.</p>
       <div class="cta-btns">
         <button class="btn-cta-primary" onclick="downloadPDF()">Download your report (PDF)</button>
-        <button class="btn-cta-secondary" onclick="window.open('https://www.linkedin.com/in/eyitayoolayemi','_blank')">Talk to United I/O →</button>
+        <a class="btn-cta-secondary" href="https://www.linkedin.com/in/eyitayoolayemi" target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">Talk to United I/O →</a>
       </div>
     </div>
   `;
@@ -1207,6 +1284,7 @@ function showResults() {
 
 // ── PDF GENERATION ────────────────────────────────────────────────────────────
 function downloadPDF() {
+  try {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const W = 210, H = 297, M = 20, CW = W - M * 2;
@@ -1256,9 +1334,7 @@ function downloadPDF() {
   logoImg.src = 'data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCALuAu4DASIAAhEBAxEB/8QAHAABAQEBAQEBAQEAAAAAAAAAAAkIBwYFAgQB/8QAUxABAAEDAgIDCQwFBwgLAAAAAAECAwQFBgcRCBIhGDFBUVZhcpTTEyIyNzhXcXWBlbO0CSNCgpEUFhdSYqGiFUNVkpOxwdIkNEVHU2ODhcLDxP/EABgBAQADAQAAAAAAAAAAAAAAAAABAgUG/8QAIhEBAAEEAQMFAAAAAAAAAAAAAAECAwURBBIXkSEiMVTR/9oADAMBAAIRAxEAPwDGQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/9k=';
   try { doc.addImage(logoImg, 'PNG', W/2 - 20, 12, 40, 40); } catch(e) {}
   y = 60;
-  text('AI READINESS REPORT', W/2, y, { size:7, color:[100,100,100], align:'center' });
-  y += 6;
-  text('AI READINESS REPORT', W/2, y, { size:7, color:[100,100,100], align:'center' });
+  text('AI READINESS REPORT', W/2, y, { size:7, color:[150,150,150], align:'center' });
   y += 20;
   text('Your AI Readiness', W/2, y, { font:'helvetica', style:'bold', size:26, color:[245,240,232], align:'center' });
   y += 10;
@@ -1266,8 +1342,8 @@ function downloadPDF() {
   y += 20;
 
   // score circle
-  doc.setDrawColor(196, 146, 42);
-  doc.setLineWidth(1.5);
+  doc.setDrawColor(203, 255, 0);
+  doc.setLineWidth(2);
   doc.circle(W/2, y + 18, 22, 'S');
   text(`${total}`, W/2, y + 15, { style:'bold', size:22, color:[245,240,232], align:'center' });
   text(`out of ${max}`, W/2, y + 21, { size:8, color:[136,136,136], align:'center' });
@@ -1276,7 +1352,8 @@ function downloadPDF() {
   const lvlColors = { high:[26,107,74], moderate:[203,255,0], low:[180,50,50] };
   const lc = lvlColors[level];
   fillRect(W/2 - 28, y, 56, 8, ...lc);
-  text(getLevelLabel(level).toUpperCase(), W/2, y + 5.5, { style:'bold', size:7, color:[255,255,255], align:'center' });
+  const lvlTextColor = level === 'moderate' ? [10,10,10] : [255,255,255];
+  text(getLevelLabel(level).toUpperCase(), W/2, y + 5.5, { style:'bold', size:7, color:lvlTextColor, align:'center' });
   y += 18;
 
   text(userData.firstName + ' ' + (userData.lastName||''), W/2, y, { size:11, color:[200,195,184], align:'center' });
@@ -1442,6 +1519,10 @@ function downloadPDF() {
 
   // ── SAVE ──
   doc.save(`United_IO_AI_Readiness_Report_${(userData.company||'Organisation').replace(/\s+/g,'_')}.pdf`);
+  } catch(err) {
+    console.error('PDF generation error:', err);
+    alert('There was an issue generating the PDF. Please try again or contact hello@united-io.com for your report.');
+  }
 }
 </script>
 </body>
